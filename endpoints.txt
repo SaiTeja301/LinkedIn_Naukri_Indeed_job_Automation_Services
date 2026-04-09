@@ -1,0 +1,424 @@
+================================================================================
+  PROJECT : Linked_and_Naukari_jobs_Spring_boot_Automation_Services
+  BASE URL: http://localhost:8080
+  PORT    : 8080
+  TOTAL   : 19 Endpoints across 6 Controllers
+  GENERATED: 2026-04-08
+================================================================================
+
+
+================================================================================
+  CONTROLLER: UserController
+  CLASS PATH: com.jobbot.controller.UserController
+  BASE PATH : /auto-jobs
+================================================================================
+
+[POST]   http://localhost:8080/auto-jobs/add-user-info
+Class  : UserController
+Method : addUserInfo
+Params : RequestBody (UserDto)
+Body   : {
+           "name": "Venkata Sai Teja",
+           "email": "venkatasaitejaakula@gmail.com",
+           "encryptedPassword": "@Teja#8520",
+           "experienceYears": 3,
+           "preferredRoles": "Java Developer",
+           "preferredCompanies": "TCS, Infosys",
+           "remote": false,
+           "hybrid": true
+         }
+Description: Register a new user with login credentials for LinkedIn/Naukri bots
+
+-----------------------------------
+
+[GET]    http://localhost:8080/auto-jobs/get-user-info/{userId}
+Class  : UserController
+Method : getUserInfo
+Params : PathVariable - userId (Long)
+Example: http://localhost:8080/auto-jobs/get-user-info/1
+Description: Fetch user details by user ID
+
+-----------------------------------
+
+[DELETE] http://localhost:8080/auto-jobs/delete-user-info/{name}/{email}
+Class  : UserController
+Method : deleteUserInfo
+Params : PathVariable - name (String), email (String)
+Example: http://localhost:8080/auto-jobs/delete-user-info/Venkata/venkatasaitejaakula@gmail.com
+Description: Delete a user by name and email
+
+
+================================================================================
+  CONTROLLER: JobController
+  CLASS PATH: com.jobbot.controller.JobController
+  BASE PATH : /auto-jobs
+================================================================================
+
+[GET]    http://localhost:8080/auto-jobs/get-all-jobs-list
+Class  : JobController
+Method : getAllJobs
+Params : none
+Description: Fetch all scraped jobs stored in the database
+
+-----------------------------------
+
+[GET]    http://localhost:8080/auto-jobs/get-search-job/{id}
+Class  : JobController
+Method : getJobById
+Params : PathVariable - id (Long)
+Example: http://localhost:8080/auto-jobs/get-search-job/1
+Description: Fetch a single job by its database ID
+
+-----------------------------------
+
+[DELETE] http://localhost:8080/auto-jobs/delete-job/{id}
+Class  : JobController
+Method : deleteJob
+Params : PathVariable - id (Long)
+Example: http://localhost:8080/auto-jobs/delete-job/1
+Description: Delete a single job from the database by ID
+
+-----------------------------------
+
+[POST]   http://localhost:8080/auto-jobs/delete-job-list
+Class  : JobController
+Method : deleteJobList
+Params : RequestBody (List<Long>)
+Body   : [1, 2, 3, 4, 5]
+Description: Delete multiple jobs from the database by list of IDs
+
+
+================================================================================
+  CONTROLLER: AutomationController
+  CLASS PATH: com.jobbot.controller.AutomationController
+  BASE PATH : /auto-jobs
+================================================================================
+
+[POST]   http://localhost:8080/auto-jobs/apply-job/{id}
+Class  : AutomationController
+Method : applyToJob
+Params : PathVariable - id (Long)
+Example: http://localhost:8080/auto-jobs/apply-job/1
+Description: Trigger automated application for a single saved job by ID
+
+-----------------------------------
+
+[POST]   http://localhost:8080/auto-jobs/apply-jobs-list
+Class  : AutomationController
+Method : applyToJobs
+Params : RequestBody (List<Long>)
+Body   : [1, 2, 3]
+Description: Trigger automated application for multiple saved jobs by IDs
+
+-----------------------------------
+
+[GET]    http://localhost:8080/auto-jobs/linkedin-jobs/scrape
+Class  : AutomationController
+Method : scrapeJobs
+Params : RequestParam - linkedinUserEmailorUserName (String)
+Example: http://localhost:8080/auto-jobs/linkedin-jobs/scrape
+            ?linkedinUserEmailorUserName=venkatasaitejaakula@gmail.com
+Description: Scrape LinkedIn recommended + easy-apply jobs for the given user
+
+-----------------------------------
+
+[GET]    http://localhost:8080/auto-jobs/linkedin-jobs/scrape-with-filters
+Class  : AutomationController
+Method : scrapeJobsWithFilters
+Params : RequestParam - linkedinUserEmailorUserName (String)
+                      - Title (String)
+                      - timeHours (Integer)
+Example: http://localhost:8080/auto-jobs/linkedin-jobs/scrape-with-filters
+            ?linkedinUserEmailorUserName=venkatasaitejaakula@gmail.com
+            &Title=java
+            &timeHours=24
+Description: Scrape LinkedIn jobs filtered by job title and posted within N hours
+
+-----------------------------------
+
+[GET]    http://localhost:8080/auto-jobs/naukri-jobs/scrape
+Class  : AutomationController
+Method : scrapeNaukriJobs
+Params : RequestParam - naukriUserEmail   (String)  [required]
+                      - keyword           (String)  [optional]
+                      - location          (String)  [optional]
+                      - experience        (Integer) [optional]
+                      - wfhType           (Integer) [optional]  0=WFO, 1=Hybrid, 2=Remote
+                      - pageCount         (Integer) [optional, default=5]
+Example: http://localhost:8080/auto-jobs/naukri-jobs/scrape
+            ?naukriUserEmail=venkatasaitejaakula@gmail.com
+            &keyword=java spring boot
+            &location=hyderabad
+            &experience=3
+            &wfhType=1
+            &pageCount=3
+Description: Login to Naukri, scrape jobs by keyword and filters, save to database
+
+-----------------------------------
+
+[GET]    http://localhost:8080/auto-jobs/naukri-jobs/scrape-recommended
+Class  : AutomationController
+Method : scrapeNaukriRecommendedJobs
+Params : RequestParam - naukriUserEmail (String) [required]
+Example: http://localhost:8080/auto-jobs/naukri-jobs/scrape-recommended
+            ?naukriUserEmail=venkatasaitejaakula@gmail.com
+Description: Login to Naukri and scrape the personalised Recommended Jobs page
+
+
+================================================================================
+  CONTROLLER: ApplyJobController
+  CLASS PATH: com.jobbot.controller.ApplyJobController
+  BASE PATH : /auto-jobs/apply
+================================================================================
+
+[POST]   http://localhost:8080/auto-jobs/apply/update-job-status
+Class  : ApplyJobController
+Method : updateJobStatus
+Params : RequestParam - applicationId (Long)
+                      - applied       (boolean)
+Example: http://localhost:8080/auto-jobs/apply/update-job-status
+            ?applicationId=1
+            &applied=true
+Description: Update application status (applied true/false) for a job application record
+
+
+================================================================================
+  CONTROLLER: ResumeController
+  CLASS PATH: com.jobbot.controller.ResumeController
+  BASE PATH : /auto-jobs
+================================================================================
+
+[POST]   http://localhost:8080/auto-jobs/update-resume
+Class  : ResumeController
+Method : updateResume
+Params : RequestParam (multipart) - file   (MultipartFile)
+                                  - userId (Long)
+Example: curl -X POST http://localhost:8080/auto-jobs/update-resume \
+              -F "file=@/path/to/resume.pdf" \
+              -F "userId=1"
+Description: Upload or update a resume file for the given user
+
+
+================================================================================
+  CONTROLLER: AgentController
+  CLASS PATH: com.jobbot.controller.AgentController
+  BASE PATH : /auto-jobs/agent
+================================================================================
+
+[POST]   http://localhost:8080/auto-jobs/agent/ask-agent
+Class  : AgentController
+Method : askAgent
+Params : RequestParam - prompt (String)
+                      - userId (Long)
+Example: http://localhost:8080/auto-jobs/agent/ask-agent
+            ?prompt=What jobs should I apply for?
+            &userId=1
+Description: Send a prompt to the AI agent for job-related advice (returns reactive Mono)
+
+-----------------------------------
+
+[GET]    http://localhost:8080/auto-jobs/agent/analyze-resume
+Class  : AgentController
+Method : analyzeResume
+Params : RequestParam - userId (Long)
+Example: http://localhost:8080/auto-jobs/agent/analyze-resume?userId=1
+Description: Trigger AI analysis of the user's uploaded resume (returns reactive Mono)
+
+
+================================================================================
+  NAUKRI SCRAPE — ALL SCENARIOS DETAILED (FULL COVERAGE — 27 Scenarios)
+================================================================================
+
+----------------------------------------
+  GROUP 1: Keyword Only (No Location, No Filters)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&pageCount=3
+Description: Java Spring Boot — All India — No filters
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&pageCount=3
+Description: Java Developer — All India — No filters
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot developer&pageCount=3
+Description: Java Spring Boot Developer — All India — No filters
+
+
+----------------------------------------
+  GROUP 2: Keyword + Location (No Experience, No WFH)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=hyderabad&pageCount=3
+Description: Java Spring Boot — Hyderabad
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&location=hyderabad&pageCount=3
+Description: Java Developer — Hyderabad
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=visakhapatnam&pageCount=2
+Description: Java Spring Boot — Visakhapatnam
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&location=visakhapatnam&pageCount=2
+Description: Java Developer — Visakhapatnam
+
+
+----------------------------------------
+  GROUP 3: Keyword + Location + Experience
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=hyderabad&experience=3&pageCount=3
+Description: Java Spring Boot — Hyderabad — 3 Years Experience
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&location=hyderabad&experience=3&pageCount=3
+Description: Java Developer — Hyderabad — 3 Years Experience
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=visakhapatnam&experience=3&pageCount=2
+Description: Java Spring Boot — Visakhapatnam — 3 Years Experience
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&location=visakhapatnam&experience=3&pageCount=2
+Description: Java Developer — Visakhapatnam — 3 Years Experience
+
+
+----------------------------------------
+  GROUP 4: Keyword + Location + Experience + WFH = WFO (wfhType=0)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=hyderabad&experience=3&wfhType=0&pageCount=3
+Description: Java Spring Boot — Hyderabad — 3 Years — WFO
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&location=hyderabad&experience=3&wfhType=0&pageCount=3
+Description: Java Developer — Hyderabad — 3 Years — WFO
+
+
+----------------------------------------
+  GROUP 5: Keyword + Location + Experience + WFH = Hybrid (wfhType=1)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=hyderabad&experience=3&wfhType=1&pageCount=3
+Description: Java Spring Boot — Hyderabad — 3 Years — Hybrid
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&location=hyderabad&experience=3&wfhType=1&pageCount=3
+Description: Java Developer — Hyderabad — 3 Years — Hybrid
+
+
+----------------------------------------
+  GROUP 6: Keyword + Location + Experience + WFH = Remote (wfhType=2)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=hyderabad&experience=3&wfhType=2&pageCount=3
+Description: Java Spring Boot — Hyderabad — 3 Years — Remote
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&location=hyderabad&experience=3&wfhType=2&pageCount=3
+Description: Java Developer — Hyderabad — 3 Years — Remote
+
+
+----------------------------------------
+  GROUP 7: Different Tech Stacks (Hyderabad, 3 Yrs, Hybrid)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=python developer&location=hyderabad&experience=3&wfhType=1&pageCount=2
+Description: Python Developer — Hyderabad — Hybrid
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=full stack developer&location=hyderabad&experience=3&wfhType=1&pageCount=2
+Description: Full Stack Developer — Hyderabad — Hybrid
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java microservices&location=hyderabad&experience=3&wfhType=1&pageCount=2
+Description: Java Microservices — Hyderabad — Hybrid
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=react spring boot&location=hyderabad&experience=3&wfhType=1&pageCount=2
+Description: React + Spring Boot — Hyderabad — Hybrid
+
+
+----------------------------------------
+  GROUP 8: No Location (All India) + Experience + Work Model
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&experience=3&wfhType=2&pageCount=3
+Description: Java Spring Boot — All India — 3 Years — Remote
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&experience=3&wfhType=1&pageCount=3
+Description: Java Spring Boot — All India — 3 Years — Hybrid
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java developer&experience=3&wfhType=0&pageCount=3
+Description: Java Developer — All India — 3 Years — WFO
+
+
+----------------------------------------
+  GROUP 9: Max Pages (Heavy Scrape — 5 Pages)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&location=hyderabad&experience=3&pageCount=5
+Description: Java Spring Boot — Hyderabad — 3 Years — 5 Pages (max scrape)
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=venkatasaitejaakula@gmail.com&keyword=java spring boot&experience=3&pageCount=5
+Description: Java Spring Boot — All India — 3 Years — 5 Pages (max scrape)
+
+
+----------------------------------------
+  GROUP 10: Recommended Jobs (Personalised — No Keyword Needed)
+----------------------------------------
+
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape-recommended?naukriUserEmail=venkatasaitejaakula@gmail.com
+Description: Scrape personalised recommended jobs for the logged-in Naukri user
+
+
+================================================================================
+  NAUKRI SCENARIOS — COMPLETE SUMMARY TABLE (27 Scenarios)
+================================================================================
+
+  #   SCENARIO                              KEYWORD             LOC        EXP  WFH  PAGES
+  --  ------------------------------------  ------------------  ---------  ---  ---  -----
+  1   Keyword only (All India)              java spring boot    -          -    -    3
+  2   Keyword only (All India)              java developer      -          -    -    3
+  3   Keyword only (All India)              java spring boot dev -         -    -    3
+  4   Keyword + Hyderabad                   java spring boot    hyderabad  -    -    3
+  5   Keyword + Hyderabad                   java developer      hyderabad  -    -    3
+  6   Keyword + Vizag                       java spring boot    vizag      -    -    2
+  7   Keyword + Vizag                       java developer      vizag      -    -    2
+  8   Keyword + Hyd + 3yrs                  java spring boot    hyderabad  3    -    3
+  9   Keyword + Hyd + 3yrs                  java developer      hyderabad  3    -    3
+  10  Keyword + Vizag + 3yrs                java spring boot    vizag      3    -    2
+  11  Keyword + Vizag + 3yrs                java developer      vizag      3    -    2
+  12  Full filters — WFO                    java spring boot    hyderabad  3    0    3
+  13  Full filters — WFO                    java developer      hyderabad  3    0    3
+  14  Full filters — Hybrid                 java spring boot    hyderabad  3    1    3
+  15  Full filters — Hybrid                 java developer      hyderabad  3    1    3
+  16  Full filters — Remote                 java spring boot    hyderabad  3    2    3
+  17  Full filters — Remote                 java developer      hyderabad  3    2    3
+  18  Alt stack — Python                    python developer    hyderabad  3    1    2
+  19  Alt stack — Full Stack                full stack dev      hyderabad  3    1    2
+  20  Alt stack — Microservices             java microservices  hyderabad  3    1    2
+  21  Alt stack — React+Spring              react spring boot   hyderabad  3    1    2
+  22  All India — Remote                    java spring boot    -          3    2    3
+  23  All India — Hybrid                    java spring boot    -          3    1    3
+  24  All India — WFO                       java developer      -          3    0    3
+  25  Max pages — Hyderabad                 java spring boot    hyderabad  3    -    5
+  26  Max pages — All India                 java spring boot    -          3    -    5
+  27  Recommended Jobs                      (personalised)      -          -    -    -
+
+
+================================================================================
+  ENDPOINT SUMMARY TABLE
+================================================================================
+
+  #   METHOD    FULL URL                                                         CTRL
+  --  --------  ---------------------------------------------------------------  ----
+  1   POST      http://localhost:8080/auto-jobs/add-user-info                    User
+  2   GET       http://localhost:8080/auto-jobs/get-user-info/{userId}           User
+  3   DELETE    http://localhost:8080/auto-jobs/delete-user-info/{name}/{email}  User
+  4   GET       http://localhost:8080/auto-jobs/get-all-jobs-list                Job
+  5   GET       http://localhost:8080/auto-jobs/get-search-job/{id}              Job
+  6   DELETE    http://localhost:8080/auto-jobs/delete-job/{id}                  Job
+  7   POST      http://localhost:8080/auto-jobs/delete-job-list                  Job
+  8   POST      http://localhost:8080/auto-jobs/apply-job/{id}                   Auto
+  9   POST      http://localhost:8080/auto-jobs/apply-jobs-list                  Auto
+  10  GET       http://localhost:8080/auto-jobs/linkedin-jobs/scrape             Auto
+  11  GET       http://localhost:8080/auto-jobs/linkedin-jobs/scrape-with-filters Auto
+  12  GET       http://localhost:8080/auto-jobs/naukri-jobs/scrape               Auto
+  13  GET       http://localhost:8080/auto-jobs/naukri-jobs/scrape-recommended   Auto
+  14  POST      http://localhost:8080/auto-jobs/apply/update-job-status          Apply
+  15  POST      http://localhost:8080/auto-jobs/update-resume                    Resume
+  16  POST      http://localhost:8080/auto-jobs/agent/ask-agent                  Agent
+  17  GET       http://localhost:8080/auto-jobs/agent/analyze-resume             Agent
+
+================================================================================
+  END OF FILE
+================================================================================
