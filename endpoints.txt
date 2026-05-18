@@ -116,8 +116,7 @@ Description: Trigger automated application for multiple saved jobs by IDs
 Class  : AutomationController
 Method : scrapeJobs
 Params : RequestParam - linkedinUserEmailorUserName (String)
-Example: http://localhost:8080/auto-jobs/linkedin-jobs/scrape
-            ?linkedinUserEmailorUserName=venkatasaitejaakula@gmail.com
+Example: http://localhost:8080/auto-jobs/linkedin-jobs/scrape?linkedinUserEmailorUserName=venkatasaitejaakula@gmail.com
 Description: Scrape LinkedIn recommended + easy-apply jobs for the given user
 
 -----------------------------------

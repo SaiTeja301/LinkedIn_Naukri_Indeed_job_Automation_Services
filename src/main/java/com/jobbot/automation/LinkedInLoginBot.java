@@ -35,7 +35,7 @@ public class LinkedInLoginBot {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get(JobConstants.JOB_PORTAL_LINKEDIN.getConstantValue());
-        Thread.sleep((long) ((Math.random() * 19) + 2000));
+        Thread.sleep((long) ((Math.random() * 19) + 13000));
 
         if (driver.findElements(By.xpath("//input[@id='username']")).size() > 0) {
             driver.findElement(By.xpath("//input[@id='username']")).sendKeys(email);
@@ -52,7 +52,7 @@ public class LinkedInLoginBot {
             Thread.sleep((long) ((Math.random() * 11) + 2000));
         }
 
-        Thread.sleep((long) ((Math.random() * 17) + 15000));
+        Thread.sleep((long) ((Math.random() * 17) + 35000));
     }
 
     public synchronized java.util.List<com.jobbot.dto.JobDto> scrapeJobs() {
@@ -62,10 +62,10 @@ public class LinkedInLoginBot {
 
             if (driver.findElements(By.xpath("//span[@title='Jobs']")).size() > 0) {
                 driver.findElement(By.xpath("//span[@title='Jobs']")).click();
-                Thread.sleep((long) ((Math.random() * 19) + 5000));
+                Thread.sleep((long) ((Math.random() * 19) + 8000));
             } else {
                 driver.navigate().to(JobConstants.JOBS_LINKEDURL.getConstantValue());
-                Thread.sleep((long) ((Math.random() * 19) + 5000));
+                Thread.sleep((long) ((Math.random() * 19) + 8000));
             }
 
             String pageSource = driver.getPageSource();
@@ -146,7 +146,7 @@ public class LinkedInLoginBot {
             String url = "https://www.linkedin.com/jobs/search-results/?f_TPR=r" + hoursInSecounds + "&keywords="
                     + Title + "%20Developer&origin=JOB_COLLECTION_PAGE_SEARCH_BUTTON";
             driver.navigate().to(url);
-            Thread.sleep((long) ((Math.random() * 17) + 2000));
+            Thread.sleep((long) ((Math.random() * 17) + 4000));
             if (driver.findElements(By.cssSelector(".jobs-search-pagination__pages li button span")).size() > 0) {
                 List<String> pagenationJobLinks = new ArrayList<>();
                 List<WebElement> pageButtons = driver
@@ -197,7 +197,7 @@ public class LinkedInLoginBot {
                 }
             } else {
                 driver.navigate().to(url);
-                Thread.sleep((long) ((Math.random() * 17) + 3000));
+                Thread.sleep((long) ((Math.random() * 17) + 4000));
                 String jobDetailPageSource = driver.getPageSource();
                 Document jobDetailDoc = Jsoup.parse(jobDetailPageSource);
                 Elements jobElements = jobDetailDoc.select(".ember-view .job-card-job-posting-card-wrapper a");
@@ -237,7 +237,7 @@ public class LinkedInLoginBot {
 
                         // Extract Key Details
                         String description = jobDetailDoc
-                                .selectXpath("//*[@id='workspace']//div[2]/div[3]//div/div/div/div/div/p").text();
+                                .selectXpath("//section//div[3]/div[3]/div/div/div/div/div/p").text();
                         String title = jobDetailDoc
                                 .selectXpath("//*[@id='workspace']//div[div/a]/following-sibling::div[1]/div/p").text(); // Rough
                                                                                                                          // assumption
