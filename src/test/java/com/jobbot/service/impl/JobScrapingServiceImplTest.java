@@ -47,7 +47,7 @@ public class JobScrapingServiceImplTest {
     }
 
     @Test
-    void testLinkedinLoginSuccess() throws InvalideUserExeption, InterruptedException {
+    void testLinkedinLoginSuccess() throws InvalideUserExeption {
         UserDto user = new UserDto();
         user.setEmail("test@email.com");
         user.setEncryptedPassword("encodedPass");
@@ -56,7 +56,7 @@ public class JobScrapingServiceImplTest {
 
         jobScrapingService.linkedinLogin("test@email.com");
 
-        verify(linkedInLoginBot, times(1)).LinkedInlogin("test@email.com", "encodedPass");
+        verify(linkedInLoginBot, times(1)).linkedinLogin("test@email.com", "encodedPass");
     }
 
     @Test

@@ -56,10 +56,10 @@ public class JobServiceImpl implements JobService {
         return jobScrapingService.scrapeAndSaveJobs(linkedinUserEmailorUserName);
     }
     
-    @Override
-	public List<JobDto> scrapeJobs(String linkedinUserEmailorUserName, String Title, Integer timeHours)
+	@Override
+	public List<JobDto> scrapeJobs(String linkedinUserEmailorUserName, String title, Integer timeHours)
 			throws InvalideUserExeption {
-		return jobScrapingService.scrapeAndSaveJobs(linkedinUserEmailorUserName, Title, timeHours);
+		return jobScrapingService.scrapeAndSaveJobs(linkedinUserEmailorUserName, title, timeHours);
 	}
 
     @Override

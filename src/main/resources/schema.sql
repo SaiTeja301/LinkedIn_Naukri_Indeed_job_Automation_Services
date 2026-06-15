@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS ai_responses;
 DROP TABLE IF EXISTS users;
 
-SET FOREIGN_KEY_CHECKS = 1;
+
 
 -- 1. Users Table
 CREATE TABLE users (

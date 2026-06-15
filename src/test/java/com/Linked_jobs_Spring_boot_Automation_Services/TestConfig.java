@@ -26,7 +26,7 @@ public class TestConfig {
             }
 
             @Override
-            public void linkedinLogin(String linkedinUserEmail) throws InvalideUserExeption, InterruptedException {
+            public void linkedinLogin(String linkedinUserEmail) throws InvalideUserExeption {
                 System.out.println("Mock linkedinLogin called for: " + linkedinUserEmail);
             }
 
@@ -36,7 +36,7 @@ public class TestConfig {
             }
 
 			@Override
-			public List<JobDto> scrapeAndSaveJobs(String linkedinUserEmail, String Title, Integer timeHours)
+			public List<JobDto> scrapeAndSaveJobs(String linkedinUserEmail, String title, Integer timeHours)
 					throws InvalideUserExeption {
 				return Collections.emptyList();
 			}

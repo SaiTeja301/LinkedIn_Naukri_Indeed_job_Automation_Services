@@ -20,10 +20,16 @@ import com.jobbot.exceptions.InvalideUserExeption;
 import com.jobbot.mapper.EntityMapper;
 import com.jobbot.repository.JobRepository;
 import com.jobbot.service.JobScrapingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Implementation of {@link JobScrapingService} for LinkedIn scraping and persistence.
+ */
 @Service
-
 public class JobScrapingServiceImpl implements JobScrapingService {
+
+    private static final Logger log = LoggerFactory.getLogger(JobScrapingServiceImpl.class);
 
     private final LinkedInLoginBot linkedInLoginBot;
     private final JobRepository jobRepository;
@@ -50,50 +56,49 @@ public class JobScrapingServiceImpl implements JobScrapingService {
             List<JobDto> savedJobDtos = SaveJobs(scrapedJobDtos);
             return savedJobDtos;
         } catch (Exception e) {
-            System.out.println("Error during scraping: " + e.getMessage());
+            log.error("Error during scraping: {}", e.getMessage(), e);
             throw new InvalideUserExeption("Error during scraping: " + e.getMessage());
         }
     }
-    @Override
-	public List<JobDto> scrapeAndSaveJobs(String linkedinUserEmail, String Title, Integer timeHours)
-			throws InvalideUserExeption {
-    	  try {
-              // 1. Delegate scraping to the Bot (returns DTOs)
-              linkedinLogin(linkedinUserEmail);
-              List<JobDto> scrapedJobDtos = linkedInLoginBot.scrapeLatestJobsByTitleandTime(Title, timeHours);
-              scrapedJobDtos.forEach(job -> job.setPlatform("LinkedIn"));
-              List<JobDto> savedJobDtos = SaveJobs(scrapedJobDtos);
-              return savedJobDtos;
-          } catch (Exception e) {
-              System.out.println("Error during scraping: " + e.getMessage());
-              throw new InvalideUserExeption("Error during scraping: " + e.getMessage());
-          }
-	}
 
     @Override
-    public void linkedinLogin(String linkedinUserEmail) throws InvalideUserExeption, InterruptedException {
-        System.out.println("Starting Job Scraping Service...");
+    public List<JobDto> scrapeAndSaveJobs(String linkedinUserEmail, String title, Integer timeHours)
+            throws InvalideUserExeption {
         try {
-
+            // 1. Delegate scraping to the Bot (returns DTOs)
+            linkedinLogin(linkedinUserEmail);
+            List<JobDto> scrapedJobDtos = linkedInLoginBot.scrapeLatestJobsByTitleandTime(title, timeHours);
+            scrapedJobDtos.forEach(job -> job.setPlatform("LinkedIn"));
+            List<JobDto> savedJobDtos = SaveJobs(scrapedJobDtos);
+            return savedJobDtos;
+        } catch (Exception e) {
+            log.error("Error during scraping: {}", e.getMessage(), e);
+            throw new InvalideUserExeption("Error during scraping: " + e.getMessage());
+        }
+    }
+ 
+    @Override
+    public void linkedinLogin(String linkedinUserEmail) throws InvalideUserExeption {
+        log.info("Starting Job Scraping Service...");
+        try {
             UserDto userObj = userService.getUserByEmail(linkedinUserEmail);
             if (userObj != null) {
-                // if User Founds'
                 String dummyValue = userObj.getEmail();
                 if (dummyValue.equalsIgnoreCase(linkedinUserEmail)) {
                     linkedinUserNameorEmail = dummyValue;
                     linkedinPassword = userObj.getEncryptedPassword();
                 } else {
-                    System.out.println("User Email mismatch: " + linkedinUserEmail);
+                    log.warn("User Email mismatch: {}", linkedinUserEmail);
                     throw new InvalideUserExeption("User Email mismatch: " + linkedinUserEmail);
                 }
             } else {
-                System.out.println("User not found with email: " + linkedinUserEmail);
+                log.warn("User not found with email: {}", linkedinUserEmail);
                 throw new InvalideUserExeption("User not found with email: " + linkedinUserEmail);
             }
-            System.out.println("Logging in to LinkedIn...");
-            linkedInLoginBot.LinkedInlogin(linkedinUserNameorEmail.trim(), linkedinPassword.trim());
+            log.info("Logging in to LinkedIn...");
+            linkedInLoginBot.linkedinLogin(linkedinUserNameorEmail.trim(), linkedinPassword.trim());
         } catch (NoSuchElementException nse) {
-            System.out.println("Login failed, element not found: " + nse.getMessage());
+            log.error("Login failed, element not found: {}", nse.getMessage(), nse);
             throw new InvalideUserExeption("Login failed, element not found: " + nse.getMessage());
         }
     }
@@ -102,10 +107,9 @@ public class JobScrapingServiceImpl implements JobScrapingService {
     @Transactional
     public List<JobDto> SaveJobs(List<JobDto> scrapedJobDtos) throws InvalideUserExeption {
         if (!scrapedJobDtos.isEmpty()) {
-            System.out.println("Processing " + scrapedJobDtos.size() + " scraped jobs.");
+            log.info("Processing {} scraped jobs.", scrapedJobDtos.size());
 
-            // Step 1: Build HashMap to track and detect duplicates WITHIN the current
-            // scraped batch
+            // Step 1: Build HashMap to track and detect duplicates WITHIN the current scraped batch
             HashMap<String, JobDto> jobMap = new HashMap<>();
             Set<String> inBatchDuplicates = new HashSet<>();
 
@@ -113,16 +117,14 @@ public class JobScrapingServiceImpl implements JobScrapingService {
                 String key = jobDto.getCompany() + "|" + jobDto.getTitle() + "|" + jobDto.getJobUrl();
 
                 if (jobMap.containsKey(key)) {
-                    System.out.println(
-                            "In-batch duplicate detected: " + jobDto.getTitle() + " at " + jobDto.getCompany());
+                    log.info("In-batch duplicate detected: {} at {}", jobDto.getTitle(), jobDto.getCompany());
                     inBatchDuplicates.add(jobDto.getJobUrl());
                 } else {
                     jobMap.put(key, jobDto);
                 }
             }
 
-            // Step 2: Collect jobs to remove (both in-batch duplicates and database
-            // duplicates)
+            // Step 2: Collect jobs to remove (both in-batch duplicates and database duplicates)
             List<JobDto> duplicatesToRemove = new ArrayList<>();
             List<JobEntity> updatedEntities = new ArrayList<>();
 
@@ -135,52 +137,44 @@ public class JobScrapingServiceImpl implements JobScrapingService {
                         continue;
                     }
 
-                    // Use findFirstByJobUrlOrderByIdAsc to get only one result (handles multiple
-                    // results gracefully)
+                    // Use findFirstByJobUrlOrderByIdAsc to get only one result
                     JobEntity existingJob = jobRepository.findFirstByJobUrlOrderByIdAsc(scrapedJobDto.getJobUrl())
                             .orElse(null);
 
                     if (existingJob != null) {
-                        System.out.println("Duplicate job found in DB, skipping: " + scrapedJobDto.getTitle() + " at "
-                                + scrapedJobDto.getCompany() + " (URL: " + scrapedJobDto.getJobUrl() + ")");
+                        log.info("Duplicate job found in DB, skipping: {} at {} (URL: {})",
+                                scrapedJobDto.getTitle(), scrapedJobDto.getCompany(), scrapedJobDto.getJobUrl());
                         existingJob.setJob_applyed_count_status(scrapedJobDto.getJob_applyed_count_status());
                         existingJob.setJob_posted(scrapedJobDto.getJob_posted());
                         updatedEntities.add(jobRepository.save(existingJob));
-                        System.out.println("Updated existing job with latest status: " + existingJob.getId() + " - "
-                                + existingJob.getCompany() + " - " + existingJob.getTitle());
+                        log.info("Updated existing job with latest status: {} - {} - {}",
+                                existingJob.getId(), existingJob.getCompany(), existingJob.getTitle());
                         duplicatesToRemove.add(scrapedJobDto);
                     }
                 } catch (Exception e) {
-                    System.out.println("  Error checking existing job for: " + scrapedJobDto.getTitle() + " at "
-                            + scrapedJobDto.getCompany() + " - " + e.getMessage());
+                    log.error("Error checking existing job for: {} at {} - {}",
+                            scrapedJobDto.getTitle(), scrapedJobDto.getCompany(), e.getMessage());
                 }
             }
 
-            // Step 3: Remove all duplicates at once (fail-safe approach)
+            // Step 3: Remove all duplicates at once
             scrapedJobDtos.removeAll(duplicatesToRemove);
-            System.out
-                    .println("Removed " + duplicatesToRemove.size() + " duplicate jobs (" + inBatchDuplicates.size()
-                            + " in-batch, " + (duplicatesToRemove.size() - inBatchDuplicates.size())
-                            + " from DB). Remaining: " + scrapedJobDtos.size());
+            log.info("Removed {} duplicate jobs ({} in-batch, {} from DB). Remaining: {}",
+                    duplicatesToRemove.size(), inBatchDuplicates.size(),
+                    (duplicatesToRemove.size() - inBatchDuplicates.size()), scrapedJobDtos.size());
 
             List<JobEntity> jobEntities = scrapedJobDtos.stream()
                     .map(this::toEntity)
                     .collect(Collectors.toList());
 
-            // System.out.println("Mapped scraped jobs to entities (IDs are null before
-            // save): " + jobEntities);
-            // System.out.println("Saving " + jobEntities.size() + " jobs to database.");
-            // Use saveAllAndFlush to force persistence and ID generation immediately
-
             List<JobEntity> savedEntities = jobRepository.saveAllAndFlush(jobEntities);
 
             if (savedEntities.isEmpty()) {
-                System.out.println("No new jobs were saved to the database.");
+                log.warn("No new jobs were saved to the database.");
             } else {
-                System.out.println("Successfully saved " + savedEntities.size() + " jobs to database.");
-                // Log generated IDs to confirm persistence
-                savedEntities.forEach(job -> System.out
-                        .println("Saved Job - Title: " + job.getTitle() + ", Generated ID: " + job.getId()));
+                log.info("Successfully saved {} jobs to database.", savedEntities.size());
+                savedEntities.forEach(job -> log.info("Saved Job - Title: {}, Generated ID: {}",
+                        job.getTitle(), job.getId()));
             }
 
             List<JobDto> allJobDtos = new ArrayList<>();
@@ -193,16 +187,13 @@ public class JobScrapingServiceImpl implements JobScrapingService {
 
             return allJobDtos;
         } else {
-            System.out.println("No jobs scraped.");
+            log.info("No jobs scraped.");
             return Collections.emptyList();
         }
     }
 
     private JobEntity toEntity(JobDto dto) {
-        // Manual mapping to ensure we don't overwrite default values (like createdAt)
-        // with nulls
         JobEntity entity = new JobEntity();
-        // ID is null for new entities, let DB handle it
         entity.setTitle(dto.getTitle());
         entity.setCompany(dto.getCompany());
         entity.setLocation(dto.getLocation());
@@ -212,14 +203,6 @@ public class JobScrapingServiceImpl implements JobScrapingService {
         entity.setJob_applyed_count_status(dto.getJob_applyed_count_status());
         entity.setDescription(dto.getDescription());
         entity.setApplied(false); // Default value for new scrapes
-
-        // NOTE: We intentionally DO NOT set createdAt here.
-        // JobEntity initializes it to LocalDateTime.now().
-        // If we used ModelMapper, it might copy 'null' from the DTO's createdAt,
-        // causing a DB error.
-
         return entity;
     }
-
-	
 }
