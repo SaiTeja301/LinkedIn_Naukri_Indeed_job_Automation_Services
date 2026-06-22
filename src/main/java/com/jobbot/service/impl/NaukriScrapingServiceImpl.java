@@ -123,7 +123,7 @@ public class NaukriScrapingServiceImpl implements NaukriScrapingService {
 
             // Step 4: Deduplicate + save (reusing the same robust logic as LinkedIn)
             List<JobDto> savedJobs = jobScrapingService.SaveJobs(scrapedJobs);
-            log.info("Saved/Updated {} Naukri jobs in DB.", savedJobs.size());
+            log.info("Saved {} new Naukri jobs in DB.", savedJobs.size());
             return savedJobs;
 
         } catch (Exception e) {
@@ -152,7 +152,7 @@ public class NaukriScrapingServiceImpl implements NaukriScrapingService {
 
             // Step 3: Deduplicate + save
             List<JobDto> savedJobs = jobScrapingService.SaveJobs(scrapedJobs);
-            log.info("Saved/Updated {} recommended Naukri jobs in DB.", savedJobs.size());
+            log.info("Saved {} new recommended Naukri jobs in DB.", savedJobs.size());
             return savedJobs;
 
         } catch (Exception e) {

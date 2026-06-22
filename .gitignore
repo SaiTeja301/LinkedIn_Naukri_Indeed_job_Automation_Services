@@ -1,5 +1,6 @@
 HELP.md
 target/
+bin/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -36,3 +37,43 @@ build/
 screenshots/
 .agent/
 logs/
+
+# ── Security: Never commit secrets or credentials ────────────────────────────
+# Environment / secret files
+.env
+.env.*
+!.env.example
+*.env
+
+# Private keys & certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+id_rsa
+id_ecdsa
+id_ed25519
+*.ppk
+
+# Spring Boot production overrides (may contain real DB/API credentials)
+application-prod.properties
+application-prod.yml
+application-local.properties
+application-local.yml
+application-secrets.properties
+application-secrets.yml
+
+# CI/CD secret files
+secrets.json
+secrets.yaml
+secrets.yml
+*credentials*
+*secret*
+vault-token
+
+# Sensitive documentation / test data
+# (add specific filenames here if needed)
+

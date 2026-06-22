@@ -18,7 +18,7 @@ Class  : UserController
 Method : addUserInfo
 Params : RequestBody (UserDto)
 Body   : {
-           "name": "Venkata Sai Teja",
+           "name": "John Doe",
            "email": "user@example.com",
            "encryptedPassword": "<YOUR_PORTAL_PASSWORD>",
            "experienceYears": 3,
@@ -44,7 +44,7 @@ Description: Fetch user details by user ID
 Class  : UserController
 Method : deleteUserInfo
 Params : PathVariable - name (String), email (String)
-Example: http://localhost:8080/auto-jobs/delete-user-info/Venkata/user@example.com
+Example: http://localhost:8080/auto-jobs/delete-user-info/John/user@example.com
 Description: Delete a user by name and email
 
 
@@ -228,6 +228,9 @@ Description: Trigger AI analysis of the user's uploaded resume (returns reactive
   NAUKRI SCRAPE — ALL SCENARIOS DETAILED (FULL COVERAGE — 27 Scenarios)
 ================================================================================
 
+  NOTE: Replace user@example.com with the email address registered in the
+        application database (via POST /auto-jobs/add-user-info) before running.
+
 ----------------------------------------
   GROUP 1: Keyword Only (No Location, No Filters)
 ----------------------------------------
@@ -305,7 +308,7 @@ Description: Java Developer — Hyderabad — 3 Years — Hybrid
 [GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=user@example.com&keyword=java spring boot&location=hyderabad&experience=3&wfhType=2&pageCount=3
 Description: Java Spring Boot — Hyderabad — 3 Years — Remote
 
-[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=user@example.com&keyword=java developer&location=hyderabad&experience=3&wfhType=2&pageCount=3
+[GET] http://localhost:8080/auto-jobs/naukri-jobs/scrape?naukriUserEmail=user@example.com&keyword=java developer&location=hyderabad&experience=3&wfhType=2&pageCount=6
 Description: Java Developer — Hyderabad — 3 Years — Remote
 
 

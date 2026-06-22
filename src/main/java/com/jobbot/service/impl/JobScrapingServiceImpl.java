@@ -177,13 +177,9 @@ public class JobScrapingServiceImpl implements JobScrapingService {
                         job.getTitle(), job.getId()));
             }
 
-            List<JobDto> allJobDtos = new ArrayList<>();
-            allJobDtos.addAll(updatedEntities.stream()
+            List<JobDto> allJobDtos = savedEntities.stream()
                     .map(EntityMapper::toDto)
-                    .collect(Collectors.toList()));
-            allJobDtos.addAll(savedEntities.stream()
-                    .map(EntityMapper::toDto)
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
 
             return allJobDtos;
         } else {
